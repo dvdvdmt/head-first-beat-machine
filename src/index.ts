@@ -1,3 +1,9 @@
+import {Header} from './view/header/header'
+import {BeatInput} from './view/beat-input/beat-input'
+import {StartButton} from './view/start-button/start-button'
+import {Progress} from './view/progress/progress'
+import {BeatDisplay} from './view/beat-display/beat-display'
+
 let rootEl = document.querySelector('.app')
 if (rootEl) {
   rootEl.remove()
@@ -6,38 +12,25 @@ rootEl = document.createElement('div')
 rootEl.className = 'app'
 document.body.appendChild(rootEl)
 
-const headerEl = document.createElement('h2')
-headerEl.innerText = 'DJ Control'
+const firstHeader = new Header({text: 'DJ Control'})
+const beatInput = new BeatInput({value: 50})
+const startButton = new StartButton({text: 'Start'})
+const secondHeader = new Header({text: 'Visualizer'})
+const pulsatingBar = new Progress({max: 100, value: 70})
+const beatDisplay = new BeatDisplay({value: 120})
 
-const beatInputEl = document.createElement('label')
-beatInputEl.innerText = 'Enter BPM: '
-const inputEl = document.createElement('input')
-inputEl.type = 'number'
-inputEl.value = '120'
-beatInputEl.appendChild(inputEl)
-
-const startButtonEl = document.createElement('button')
-startButtonEl.innerText = 'Start'
-
-const secondHeaderEl = document.createElement('h2')
-secondHeaderEl.innerText = 'Visualizer'
-
-const progressEl = document.createElement('progress')
-progressEl.max = 100
-progressEl.value = 70
-
-const currentBeatValueEl = document.createElement('div')
-currentBeatValueEl.innerText = 'Current BPM: '
-const strongTextEl = document.createElement('strong')
-strongTextEl.innerText = '120'
-currentBeatValueEl.appendChild(strongTextEl)
-
-rootEl.appendChild(headerEl)
-rootEl.appendChild(beatInputEl)
-rootEl.appendChild(startButtonEl)
-rootEl.appendChild(secondHeaderEl)
-rootEl.appendChild(progressEl)
-rootEl.appendChild(currentBeatValueEl)
+firstHeader.render()
+rootEl.appendChild(firstHeader.el)
+beatInput.render()
+rootEl.appendChild(beatInput.el)
+startButton.render()
+rootEl.appendChild(startButton.el)
+secondHeader.render()
+rootEl.appendChild(secondHeader.el)
+pulsatingBar.render()
+rootEl.appendChild(pulsatingBar.el)
+beatDisplay.render()
+rootEl.appendChild(beatDisplay.el)
 
 /*
  NOTE: This markup could be done like that:
