@@ -8,7 +8,11 @@
     "build": "parcel build src/index.html"
   },
   "devDependencies": {
-    "prettier": "^2.4.1",
-    "parcel": "^2.0.0"
+    "@parcel/transformer-sass": "^2.0.0",
+    "parcel": "^2.0.0",
+    "prettier": "^2.4.1"
+  },
+  "dependencies": {
+    "@types/webpack-env": "^1.16.3"
   }
 }
