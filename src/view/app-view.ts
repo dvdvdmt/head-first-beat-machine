@@ -1,32 +1,39 @@
 import {IView} from './i-view'
 import {Header} from './header/header'
 import {BeatInput} from './beat-input/beat-input'
-import {StartButton} from './start-button/start-button'
+import {StartStopButton} from './start-stop-button/start-stop-button'
 import {BeatBar} from './beat-bar/beat-bar'
 import {BeatDisplay} from './beat-display/beat-display'
 import {BeatModel, BeatModelEvent} from '../beat-model'
+import {BeatController} from '../beat-controller'
 
 export class AppView implements IView {
   el: HTMLElement
   private firstHeader: Header
   private beatInput: BeatInput
-  private startButton: StartButton
+  private startButton: StartStopButton
+  private controller: BeatController
   private secondHeader: Header
   private pulsatingBar: BeatBar
   private beatDisplay: BeatDisplay
   private model: BeatModel
 
-  constructor(model: BeatModel) {
+  constructor(controller: BeatController, model: BeatModel) {
+    this.controller = controller
     this.model = model
-    this.model.addEventListener(BeatModelEvent.BeatPlayed, () => {
-      this.pulsatingBar.pulse()
-    })
+    this.model.addEventListener(BeatModelEvent.BeatPlayed, this.onBeat)
     this.el = document.createElement('div')
     this.el.className = 'app'
 
     this.firstHeader = new Header({text: 'DJ Control'})
     this.beatInput = new BeatInput({value: 50})
-    this.startButton = new StartButton({text: 'Start'})
+    this.startButton = new StartStopButton()
+    this.startButton.addEventListener(StartStopButton.startEvent, () => {
+      this.controller.start()
+    })
+    this.startButton.addEventListener(StartStopButton.stopEvent, () => {
+      this.controller.stop()
+    })
     this.secondHeader = new Header({text: 'Visualizer'})
     this.pulsatingBar = new BeatBar({value: 70})
     this.beatDisplay = new BeatDisplay({value: 120})
@@ -46,5 +53,22 @@ export class AppView implements IView {
     this.secondHeader.render()
     this.pulsatingBar.render()
     this.beatDisplay.render()
+  }
+
+  attachToDocument() {
+    const rootEl = document.querySelector('.app')
+    if (rootEl) {
+      rootEl.remove()
+    }
+    this.render()
+    document.body.appendChild(this.el)
+  }
+
+  toggleStartButton() {
+    this.startButton.toggle()
+  }
+
+  private onBeat = () => {
+    this.pulsatingBar.pulse()
   }
 }
