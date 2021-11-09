@@ -1,9 +1,6 @@
-export const enum BeatModelEvent {
-  BPMUpdated = 'BPMUpdated',
-  BeatPlayed = 'BeatPlayed',
-}
-
 export class BeatModel extends EventTarget {
+  static readonly beatUpdatedEvent = 'beatUpdatedEvent'
+  static readonly beatPlayedEvent = 'beatPlayedEvent'
   private beatPerMinute: number
   private isPlaying: boolean
   private playInterval: number | undefined
@@ -17,7 +14,7 @@ export class BeatModel extends EventTarget {
   run(): void {
     const minute = 60_000
     this.playInterval = window.setInterval(() => {
-      this.dispatchEvent(new Event(BeatModelEvent.BeatPlayed))
+      this.dispatchEvent(new Event(BeatModel.beatPlayedEvent))
     }, minute / this.bpm)
   }
 
@@ -30,7 +27,7 @@ export class BeatModel extends EventTarget {
       throw new Error(`The beat can't be zero or negative`)
     }
     this.beatPerMinute = value
-    this.dispatchEvent(new Event(BeatModelEvent.BPMUpdated))
+    this.dispatchEvent(new Event(BeatModel.beatUpdatedEvent))
   }
 
   on(): void {

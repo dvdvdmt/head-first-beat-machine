@@ -4,7 +4,7 @@ import {BeatInput} from './beat-input/beat-input'
 import {StartStopButton} from './start-stop-button/start-stop-button'
 import {BeatBar} from './beat-bar/beat-bar'
 import {BeatDisplay} from './beat-display/beat-display'
-import {BeatModel, BeatModelEvent} from '../beat-model'
+import {BeatModel} from '../beat-model'
 import {BeatController} from '../beat-controller'
 
 export class AppView implements IView {
@@ -16,17 +16,19 @@ export class AppView implements IView {
   private secondHeader: Header
   private pulsatingBar: BeatBar
   private beatDisplay: BeatDisplay
-  private model: BeatModel
+  private model: Readonly<BeatModel>
 
   constructor(controller: BeatController, model: BeatModel) {
     this.controller = controller
     this.model = model
-    this.model.addEventListener(BeatModelEvent.BeatPlayed, this.onBeat)
+    this.model.addEventListener(BeatModel.beatPlayedEvent, this.onBeatPlayed)
+    this.model.addEventListener(BeatModel.beatUpdatedEvent, this.onBeatUpdated)
     this.el = document.createElement('div')
     this.el.className = 'app'
 
     this.firstHeader = new Header({text: 'DJ Control'})
-    this.beatInput = new BeatInput({value: 50})
+    this.beatInput = new BeatInput({value: model.bpm})
+    this.beatInput.addEventListener(BeatInput.inputEvent, this.onBeatInput)
     this.startButton = new StartStopButton()
     this.startButton.addEventListener(StartStopButton.startEvent, () => {
       this.controller.start()
@@ -36,7 +38,7 @@ export class AppView implements IView {
     })
     this.secondHeader = new Header({text: 'Visualizer'})
     this.pulsatingBar = new BeatBar({value: 70})
-    this.beatDisplay = new BeatDisplay({value: 120})
+    this.beatDisplay = new BeatDisplay({value: model.bpm})
 
     this.el.appendChild(this.firstHeader.el)
     this.el.appendChild(this.beatInput.el)
@@ -68,7 +70,16 @@ export class AppView implements IView {
     this.startButton.toggle()
   }
 
-  private onBeat = () => {
+  private onBeatPlayed = () => {
     this.pulsatingBar.pulse()
+  }
+
+  private onBeatUpdated = () => {
+    this.beatDisplay.props.value = this.model.bpm
+    this.beatDisplay.render()
+  }
+
+  private onBeatInput = () => {
+    this.controller.setBeatPerMinute(parseInt(this.beatInput.value, 10))
   }
 }

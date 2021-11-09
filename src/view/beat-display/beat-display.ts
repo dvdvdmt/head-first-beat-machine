@@ -6,7 +6,7 @@ interface IProps {
 
 export class BeatDisplay implements IView {
   el: HTMLElement
-  private props: IProps
+  props: IProps
   private valueEl: HTMLElement
 
   constructor(props: IProps) {

@@ -20,4 +20,8 @@ export class BeatController {
     this.model.off()
     this.view.toggleStartButton()
   }
+
+  setBeatPerMinute(number: number) {
+    this.model.bpm = number
+  }
 }
