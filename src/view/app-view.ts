@@ -1,7 +1,7 @@
 import {IView} from './i-view'
 import {Header} from './header/header'
 import {BeatInput} from './beat-input/beat-input'
-import {StartStopButton} from './start-stop-button/start-stop-button'
+import {ToggleButton} from './toggle-button/toggle-button'
 import {BeatBar} from './beat-bar/beat-bar'
 import {BeatDisplay} from './beat-display/beat-display'
 import {BeatModel} from '../beat-model'
@@ -11,7 +11,7 @@ export class AppView implements IView {
   el: HTMLElement
   private firstHeader: Header
   private beatInput: BeatInput
-  private startButton: StartStopButton
+  private startButton: ToggleButton
   private controller: BeatController
   private secondHeader: Header
   private pulsatingBar: BeatBar
@@ -29,11 +29,11 @@ export class AppView implements IView {
     this.firstHeader = new Header({text: 'DJ Control'})
     this.beatInput = new BeatInput({value: model.bpm})
     this.beatInput.addEventListener(BeatInput.inputEvent, this.onBeatInput)
-    this.startButton = new StartStopButton()
-    this.startButton.addEventListener(StartStopButton.startEvent, () => {
+    this.startButton = new ToggleButton({enableText: 'Start', disableText: 'Stop'})
+    this.startButton.addEventListener(ToggleButton.startEvent, () => {
       this.controller.start()
     })
-    this.startButton.addEventListener(StartStopButton.stopEvent, () => {
+    this.startButton.addEventListener(ToggleButton.stopEvent, () => {
       this.controller.stop()
     })
     this.secondHeader = new Header({text: 'Visualizer'})
@@ -66,8 +66,14 @@ export class AppView implements IView {
     document.body.appendChild(this.el)
   }
 
-  toggleStartButton() {
-    this.startButton.toggle()
+  enableStartButton() {
+    this.startButton.props.enabled = true
+    this.startButton.render()
+  }
+
+  disableStartButton() {
+    this.startButton.props.enabled = false
+    this.startButton.render()
   }
 
   private onBeatPlayed = () => {

@@ -13,12 +13,12 @@ export class BeatController {
 
   start() {
     this.model.on()
-    this.view.toggleStartButton()
+    this.view.enableStartButton()
   }
 
   stop() {
     this.model.off()
-    this.view.toggleStartButton()
+    this.view.disableStartButton()
   }
 
   setBeatPerMinute(number: number) {
