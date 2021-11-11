@@ -11,13 +11,6 @@ export class BeatModel extends EventTarget {
     this.isPlaying = false
   }
 
-  run(): void {
-    const minute = 60_000
-    this.playInterval = window.setInterval(() => {
-      this.dispatchEvent(new Event(BeatModel.beatPlayedEvent))
-    }, minute / this.bpm)
-  }
-
   get bpm(): number {
     return this.beatPerMinute
   }
@@ -28,6 +21,18 @@ export class BeatModel extends EventTarget {
     }
     this.beatPerMinute = value
     this.dispatchEvent(new Event(BeatModel.beatUpdatedEvent))
+    if (this.isPlaying) {
+      this.off()
+      this.on()
+    }
+  }
+
+  run(): void {
+    const minute = 60_000
+    this.dispatchBeatPlayed()
+    this.playInterval = window.setInterval(() => {
+      this.dispatchBeatPlayed()
+    }, minute / this.bpm)
   }
 
   on(): void {
@@ -38,5 +43,9 @@ export class BeatModel extends EventTarget {
   off(): void {
     window.clearInterval(this.playInterval)
     this.isPlaying = false
+  }
+
+  private dispatchBeatPlayed() {
+    this.dispatchEvent(new Event(BeatModel.beatPlayedEvent))
   }
 }
