@@ -1,13 +1,18 @@
+import {BeatPlayer} from './beat-player'
+
 export class BeatModel extends EventTarget {
   static readonly beatUpdatedEvent = 'beatUpdatedEvent'
   static readonly beatPlayedEvent = 'beatPlayedEvent'
   private beatPerMinute: number
   private isPlaying: boolean
   private playInterval: number | undefined
+  private player: BeatPlayer
 
   constructor(beatPerMinute = 60) {
     super()
     this.beatPerMinute = beatPerMinute
+    this.player = new BeatPlayer()
+    this.player.initialize()
     this.isPlaying = false
   }
 
@@ -22,22 +27,22 @@ export class BeatModel extends EventTarget {
     this.beatPerMinute = value
     this.dispatchEvent(new Event(BeatModel.beatUpdatedEvent))
     if (this.isPlaying) {
-      this.off()
-      this.on()
+      window.clearInterval(this.playInterval)
+      this.repeatBeat()
     }
   }
 
-  run(): void {
+  repeatBeat(): void {
     const minute = 60_000
-    this.dispatchBeatPlayed()
     this.playInterval = window.setInterval(() => {
-      this.dispatchBeatPlayed()
+      this.playBeat()
     }, minute / this.bpm)
   }
 
   on(): void {
     this.isPlaying = true
-    this.run()
+    this.playBeat()
+    this.repeatBeat()
   }
 
   off(): void {
@@ -45,7 +50,8 @@ export class BeatModel extends EventTarget {
     this.isPlaying = false
   }
 
-  private dispatchBeatPlayed() {
+  private playBeat() {
+    this.player.play()
     this.dispatchEvent(new Event(BeatModel.beatPlayedEvent))
   }
 }
