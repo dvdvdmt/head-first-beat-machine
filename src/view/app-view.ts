@@ -5,40 +5,40 @@ import {ToggleButton} from './toggle-button/toggle-button'
 import {BeatBar} from './beat-bar/beat-bar'
 import {BeatDisplay} from './beat-display/beat-display'
 import {BeatModel} from '../beat-model'
-import {BeatController} from '../beat-controller'
+
+interface IProps {
+  model: Readonly<BeatModel>
+  onStart(): void
+  onStop(): void
+  onBeatInput(beatPerMinute: number): void
+}
 
 export class AppView implements IView {
   el: HTMLElement
+  private props: IProps
   private firstHeader: Header
   private beatInput: BeatInput
   private startButton: ToggleButton
-  private controller: BeatController
   private secondHeader: Header
   private pulsatingBar: BeatBar
   private beatDisplay: BeatDisplay
-  private model: Readonly<BeatModel>
 
-  constructor(controller: BeatController, model: BeatModel) {
-    this.controller = controller
-    this.model = model
-    this.model.addEventListener(BeatModel.beatPlayedEvent, this.onBeatPlayed)
-    this.model.addEventListener(BeatModel.beatUpdatedEvent, this.onBeatUpdated)
+  constructor(props: IProps) {
+    this.props = props
+    this.props.model.addEventListener(BeatModel.beatPlayedEvent, this.onBeatPlayed)
+    this.props.model.addEventListener(BeatModel.beatUpdatedEvent, this.onBeatUpdated)
     this.el = document.createElement('div')
     this.el.className = 'app'
 
     this.firstHeader = new Header({text: 'DJ Control'})
-    this.beatInput = new BeatInput({value: model.bpm})
+    this.beatInput = new BeatInput({value: this.props.model.bpm})
     this.beatInput.addEventListener(BeatInput.inputEvent, this.onBeatInput)
     this.startButton = new ToggleButton({enableText: 'Start', disableText: 'Stop'})
-    this.startButton.addEventListener(ToggleButton.startEvent, () => {
-      this.controller.start()
-    })
-    this.startButton.addEventListener(ToggleButton.stopEvent, () => {
-      this.controller.stop()
-    })
+    this.startButton.addEventListener(ToggleButton.startEvent, this.props.onStart)
+    this.startButton.addEventListener(ToggleButton.stopEvent, this.props.onStop)
     this.secondHeader = new Header({text: 'Visualizer'})
     this.pulsatingBar = new BeatBar({value: 70})
-    this.beatDisplay = new BeatDisplay({value: model.bpm})
+    this.beatDisplay = new BeatDisplay({value: this.props.model.bpm})
 
     this.el.appendChild(this.firstHeader.el)
     this.el.appendChild(this.beatInput.el)
@@ -81,11 +81,11 @@ export class AppView implements IView {
   }
 
   private onBeatUpdated = () => {
-    this.beatDisplay.props.value = this.model.bpm
+    this.beatDisplay.props.value = this.props.model.bpm
     this.beatDisplay.render()
   }
 
   private onBeatInput = () => {
-    this.controller.setBeatPerMinute(parseInt(this.beatInput.value, 10))
+    this.props.onBeatInput(parseInt(this.beatInput.value, 10))
   }
 }

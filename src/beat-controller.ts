@@ -7,21 +7,26 @@ export class BeatController {
 
   constructor() {
     this.model = new BeatModel(80)
-    this.view = new AppView(this, this.model)
+    this.view = new AppView({
+      model: this.model,
+      onBeatInput: this.setBeatPerMinute,
+      onStop: this.stop,
+      onStart: this.start,
+    })
     this.view.attachToDocument()
   }
 
-  start() {
+  start = () => {
     this.model.on()
     this.view.enableStartButton()
   }
 
-  stop() {
+  stop = () => {
     this.model.off()
     this.view.disableStartButton()
   }
 
-  setBeatPerMinute(number: number) {
-    this.model.bpm = number
+  setBeatPerMinute = (value: number) => {
+    this.model.bpm = value
   }
 }
