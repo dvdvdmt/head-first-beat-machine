@@ -33,9 +33,12 @@ export class AppView implements IView {
     this.firstHeader = new Header({text: 'DJ Control'})
     this.beatInput = new BeatInput({value: this.props.model.bpm})
     this.beatInput.addEventListener(BeatInput.inputEvent, this.onBeatInput)
-    this.startButton = new ToggleButton({enableText: 'Start', disableText: 'Stop'})
-    this.startButton.addEventListener(ToggleButton.startEvent, this.props.onStart)
-    this.startButton.addEventListener(ToggleButton.stopEvent, this.props.onStop)
+    this.startButton = new ToggleButton({
+      enableText: 'Start',
+      disableText: 'Stop',
+      onEnable: this.props.onStart,
+      onDisable: this.props.onStop,
+    })
     this.secondHeader = new Header({text: 'Visualizer'})
     this.pulsatingBar = new BeatBar({value: 70})
     this.beatDisplay = new BeatDisplay({value: this.props.model.bpm})

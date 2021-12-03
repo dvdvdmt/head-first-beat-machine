@@ -1,20 +1,26 @@
 import {IView} from '../i-view'
 
 interface IProps {
-  enabled?: boolean
-  disableText?: string
-  enableText?: string
+  enabled: boolean
+  disableText: string
+  enableText: string
+  onEnable(): void
+  onDisable(): void
 }
 
-export class ToggleButton extends EventTarget implements IView {
-  static readonly startEvent = 'start'
-  static readonly stopEvent = 'stop'
+export class ToggleButton implements IView {
   el: HTMLElement
-  props: Required<IProps>
+  props: IProps
 
-  constructor(props: IProps = {}) {
-    super()
-    this.props = {enabled: false, enableText: 'On', disableText: 'Off', ...props}
+  constructor(props: Partial<IProps> = {}) {
+    this.props = {
+      enabled: false,
+      enableText: 'On',
+      disableText: 'Off',
+      onEnable() {},
+      onDisable() {},
+      ...props,
+    }
     this.el = document.createElement('button')
     this.el.addEventListener('click', this.onClick)
   }
@@ -25,9 +31,9 @@ export class ToggleButton extends EventTarget implements IView {
 
   onClick = () => {
     if (this.props.enabled) {
-      this.dispatchEvent(new Event(ToggleButton.stopEvent))
+      this.props.onDisable()
     } else {
-      this.dispatchEvent(new Event(ToggleButton.startEvent))
+      this.props.onEnable()
     }
   }
 }
